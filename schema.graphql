@@ -1,9 +1,7 @@
 type BlockHeader @entity {
   id: ID!
   hash: String!
-  createdAt: DateTime!
   paraChainBlockHeight: BigInt!
-  relayChainBlockHeight: BigInt!
 }
 
 type Asset @entity {
@@ -13,7 +11,7 @@ type Asset @entity {
 
 type OmnipoolAsset @entity {
   id: ID!
-  asset: Asset!
-  block: BlockHeader
+  asset: Int!
+  block: Int!
   hubReserve: BigInt
 }

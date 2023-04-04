@@ -1,7 +1,5 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
 import * as marshal from "./marshal"
-import {Asset} from "./asset.model"
-import {BlockHeader} from "./blockHeader.model"
 
 @Entity_()
 export class OmnipoolAsset {
@@ -12,13 +10,11 @@ export class OmnipoolAsset {
     @PrimaryColumn_()
     id!: string
 
-    @Index_()
-    @ManyToOne_(() => Asset, {nullable: true})
-    asset!: Asset
+    @Column_("int4", {nullable: false})
+    asset!: number
 
-    @Index_()
-    @ManyToOne_(() => BlockHeader, {nullable: true})
-    block!: BlockHeader | undefined | null
+    @Column_("int4", {nullable: false})
+    block!: number
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
     hubReserve!: bigint | undefined | null

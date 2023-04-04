@@ -15,9 +15,9 @@ services:
     restart: on-failure
     image: subsquid/substrate-ingest:firesquid
     command: [
-       "-e", "wss://rpc-lb.data6.zp-labs.net:8443/hydradx/ws/?token=2ZGuGivPJJAxXiT1hR1Yg2MXGjMrhEBYFjgbdPi",
-       "-c", "5", # allow up to 20 pending requests for the above endpoint (default is 5)
-       #  "--start-block", "1000000", # uncomment to specify a non-zero start block
+       "-e", "wss://rpc.hydradx.cloud",
+       "-c", "20", # allow up to 20 pending requests for the above endpoint (default is 5)
+       #"--start-block", "2000000", # uncomment to specify a non-zero start block
        "--out", "postgres://postgres:postgres@db:5432/squid-archive"
     ]
 
@@ -29,7 +29,7 @@ services:
       RUST_LOG: "substrate_gateway=info,actix_server=info"
     command: [
        "--database-url", "postgres://postgres:postgres@db:5432/squid-archive",
-       "--database-max-connections", "3", # max number of concurrent database connections
+       "--database-max-connections", "5", # max number of concurrent database connections
        # "--evm-support" # uncomment for chains with Frontier EVM pallet
                          # (e.g. Moonbeam/Moonriver or Astar/Shiden)
     ]
