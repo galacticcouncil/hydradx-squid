@@ -26,14 +26,12 @@ processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
 
-  const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-  let currentStorage = new OmnipoolAssetsStorage(ctx, lastBlock)
-  const assetIds = await currentStorage.asV115.getKeys()
+  const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
+  let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
+  const assetIds = await lastBlockStorage.asV115.getKeys()
 
   for (const block of ctx.blocks) {
     // console.log("Last block: ", block.header.height)
-    let storage = new OmnipoolAssetsStorage(ctx, block.header)
-
     for (const asset of assetIds) {
       Promise.all([
         getAssetHubReserve(ctx, block.header.height, asset)
