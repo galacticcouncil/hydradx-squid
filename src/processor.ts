@@ -3,7 +3,7 @@ import * as ss58 from "@subsquid/ss58"
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
-import { Asset, BlockHeader, OmnipoolAsset } from "./model"
+import { OmnipoolAsset } from "./model"
 import { OmnipoolAssetsStorage } from "./types/storage"
 
 
@@ -15,32 +15,42 @@ const processor = new SubstrateBatchProcessor()
     //archive: 'http://localhost:8888/graphql',
     chain: 'wss://rpc.hydradx.cloud'
   })
-.setBlockRange({ from: 2_099_990, to: 2_100_000})
-.includeAllBlocks({ from: 2_099_990, to: 2_100_000})
-
+  .setBlockRange({ from: 1_475_997})
+  .includeAllBlocks({ from: 1_475_997})
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
 
 processor.run(new TypeormDatabase(), async ctx => {
 
-  // const assets = await ctx.store.find(Asset)
-
   let omnipoolAssets: OmnipoolAsset[] = []
 
+  const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+  let currentStorage = new OmnipoolAssetsStorage(ctx, lastBlock)
+  const assetIds = await currentStorage.asV115.getKeys()
+
   for (const block of ctx.blocks) {
+    // console.log("Last block: ", block.header.height)
     let storage = new OmnipoolAssetsStorage(ctx, block.header)
-    for (const assetId of await storage.asV115.getKeys()) {
-      let assetReserve = (await storage.asV115.get(assetId))?.hubReserve;
-      //let assetName = (await storage.asV115.get(assetId))?.name;
-      //ctx.log.info(`HubReserve for assetId ${assetId} at block ${block.header.height} is ${assetReserve}`)
-      omnipoolAssets.push(
-        new OmnipoolAsset({
-          id: `${assetId}-${block.header.height}`,
-          asset: assetId,
-          block: block.header.height,//new BlockHeader({id: block.header.hash}),
-          hubReserve: assetReserve}))
+
+    for (const asset of assetIds) {
+      Promise.all([
+        getAssetHubReserve(ctx, block.header.height, asset)
+      ]).then(([assetReserve]) => {
+        omnipoolAssets.push(
+          new OmnipoolAsset({
+            id: `${asset}-${block.header.height}`,
+            assetId: asset,
+            block: block.header.height,
+            hubReserve: assetReserve
+          }))
+      })
     }
   }
-  ctx.store.save(omnipoolAssets)
+  ctx.store.insert(omnipoolAssets)
 })
+
+async function getAssetHubReserve(ctx: Ctx, block: number, assetId: number) {
+  let storage = new OmnipoolAssetsStorage(ctx, block as any)
+  return (await storage.asV115.get(assetId))?.hubReserve
+}

@@ -1,17 +1,6 @@
-type BlockHeader @entity {
-  id: ID!
-  hash: String!
-  paraChainBlockHeight: BigInt!
-}
-
-type Asset @entity {
-  id: ID!
-  name: String!
-}
-
 type OmnipoolAsset @entity {
   id: ID!
-  asset: Int!
-  block: Int!
+  assetId: Int!
+  block: Int! @index
   hubReserve: BigInt
 }
