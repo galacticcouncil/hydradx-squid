@@ -15,8 +15,9 @@ const processor = new SubstrateBatchProcessor()
     //archive: 'http://localhost:8888/graphql',
     chain: 'wss://rpc.hydradx.cloud'
   })
-  .setBlockRange({ from: 1_475_997})
-  .includeAllBlocks({ from: 1_475_997})
+  // Omnipool was initialized at block 1_708_101
+  .setBlockRange({ from: 1_708_101})
+  .includeAllBlocks({ from: 1_708_101})
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
