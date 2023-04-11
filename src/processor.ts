@@ -4,6 +4,7 @@ import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subs
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
+import { OmnipoolTokenAddedEvent } from "./types/events"
 import { OmnipoolAssetsStorage } from "./types/storage"
 
 
@@ -16,8 +17,15 @@ const processor = new SubstrateBatchProcessor()
     chain: 'wss://rpc.hydradx.cloud'
   })
   // Omnipool was initialized at block 1_708_101
-  .setBlockRange({ from: 1_708_101})
-  .includeAllBlocks({ from: 1_708_101})
+  .setBlockRange({ from: 1_708_101, to: 1_709_101})
+  .includeAllBlocks({ from: 1_708_101, to: 1_709_101})
+  // .addEvent('Omnipool.TokenAdded', {
+  //   data: {
+  //     event: {
+  //       args: true,
+  //     },
+  //   },
+  // })
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
@@ -25,13 +33,20 @@ type Ctx = BatchContext<Store, Item>
 processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
-
-  const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
-  let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
-  const assetIds = await lastBlockStorage.asV115.getKeys()
+  let assetIds = await getAssets(ctx, ctx.blocks[0].header.height)
+  console.log("assetIds: ", assetIds)
 
   for (const block of ctx.blocks) {
-    // console.log("Last block: ", block.header.height)
+    console.log("block: ", block.header.height % 100 == 0)
+
+    // for (let item of block.items) {
+    //   if (item.name == 'Omnipool.TokenAdded') {
+    //     let e = new OmnipoolTokenAddedEvent(ctx, item.event).asV115
+    //     console.log("assetId ", e.assetId)
+    //     assetIds.push(e.assetId)
+    //   }
+    // }
+
     for (const asset of assetIds) {
       Promise.all([
         getAssetHubReserve(ctx, block.header.height, asset)
@@ -52,4 +67,9 @@ processor.run(new TypeormDatabase(), async ctx => {
 async function getAssetHubReserve(ctx: Ctx, block: number, assetId: number) {
   let storage = new OmnipoolAssetsStorage(ctx, block as any)
   return (await storage.asV115.get(assetId))?.hubReserve
+}
+
+function getAssets(ctx: Ctx, block: number) {
+  let storage = new OmnipoolAssetsStorage(ctx, block as any)
+  return storage.asV115.getKeys()
 }

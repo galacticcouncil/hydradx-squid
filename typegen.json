@@ -2,6 +2,7 @@
   "outDir": "src/types",
   "specVersions": "https://hydradx.archive.subsquid.io/graphql",
   "events": [
+    "Omnipool.TokenAdded"
   ],
   "calls": [ 
   ],
