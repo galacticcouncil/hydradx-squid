@@ -17,8 +17,8 @@ const processor = new SubstrateBatchProcessor()
     chain: 'wss://rpc.hydradx.cloud'
   })
   // Omnipool was initialized at block 1_708_101
-  .setBlockRange({ from: 1_708_101, to: 1_709_101})
-  .includeAllBlocks({ from: 1_708_101, to: 1_709_101})
+  .setBlockRange({ from: 1_708_101})
+  .includeAllBlocks({ from: 1_708_101})
   // .addEvent('Omnipool.TokenAdded', {
   //   data: {
   //     event: {
@@ -33,11 +33,18 @@ type Ctx = BatchContext<Store, Item>
 processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
-  let assetIds = await getAssets(ctx, ctx.blocks[0].header.height)
+
+  // let assetIds = await getAssets(ctx, ctx.blocks[0].header.height)
+  const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
+  let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
+  const assetIds = await lastBlockStorage.asV115.getKeys()
+
   console.log("assetIds: ", assetIds)
 
   for (const block of ctx.blocks) {
-    console.log("block: ", block.header.height % 100 == 0)
+    if (block.header.height % 100 == 0) {
+      console.log("block: ", block.header.height)
+    }
 
     // for (let item of block.items) {
     //   if (item.name == 'Omnipool.TokenAdded') {
@@ -49,7 +56,7 @@ processor.run(new TypeormDatabase(), async ctx => {
 
     for (const asset of assetIds) {
       Promise.all([
-        getAssetHubReserve(ctx, block.header.height, asset)
+        await getAssetHubReserve(ctx, block.header.height, asset)
       ]).then(([assetReserve]) => {
         omnipoolAssets.push(
           new OmnipoolAsset({
@@ -58,8 +65,9 @@ processor.run(new TypeormDatabase(), async ctx => {
             block: block.header.height,
             hubReserve: assetReserve
           }))
-      })
-    }
+      }).catch((e) => {
+        console.log("error: ", e)
+      })}
   }
   ctx.store.insert(omnipoolAssets)
 })
