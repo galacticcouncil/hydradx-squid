@@ -40,11 +40,6 @@ processor.run(new TypeormDatabase(), async ctx => {
   await ctx.store.insert(omnipoolAssets)
 })
 
-async function getAssetHubReserves(ctx: Ctx, block: number, assetId: number) {
-  let storage = new OmnipoolAssetsStorage(ctx, block as any)
-  return storage
-}
-
 async function getAssetsAndReserves(ctx: Ctx, block: number) {
   let storage = new OmnipoolAssetsStorage(ctx, block as any)
   let omnipoolAssets: OmnipoolAsset[] = []
