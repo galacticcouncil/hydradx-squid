@@ -57,5 +57,5 @@ async function getAssetsAndReserves(ctx: Ctx, block: number) {
       hubReserve: pairs[k][1].hubReserve
       }))
   }
-  return Promise.all(omnipoolAssets)
+  return omnipoolAssets
 }
