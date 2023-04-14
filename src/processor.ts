@@ -6,6 +6,7 @@ import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
 import { OmnipoolTokenAddedEvent } from "./types/events"
 import { OmnipoolAssetsStorage } from "./types/storage"
+import { AssetState } from "./types/v115"
 
 
 const processor = new SubstrateBatchProcessor()
@@ -35,11 +36,11 @@ processor.run(new TypeormDatabase(), async ctx => {
   let omnipoolAssets: OmnipoolAsset[] = []
 
   // let assetIds = await getAssets(ctx, ctx.blocks[0].header.height)
-  const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
-  let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
-  const assetIds = await lastBlockStorage.asV115.getKeys()
+  // const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
+  // let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
+  // const assetIds = await lastBlockStorage.asV115.getKeys()
 
-  console.log("assetIds: ", assetIds)
+  // console.log("assetIds: ", assetIds)
 
   for (const block of ctx.blocks) {
     if (block.header.height % 100 == 0) {
@@ -54,30 +55,45 @@ processor.run(new TypeormDatabase(), async ctx => {
     //   }
     // }
 
-    for (const asset of assetIds) {
-      Promise.all([
-        await getAssetHubReserve(ctx, block.header.height, asset)
-      ]).then(([assetReserve]) => {
-        omnipoolAssets.push(
-          new OmnipoolAsset({
-            id: `${asset}-${block.header.height}`,
-            assetId: asset,
-            block: block.header.height,
-            hubReserve: assetReserve
-          }))
-      }).catch((e) => {
-        console.log("error: ", e)
-      })}
+    //let as = await getAssets(ctx, block.header.height)
+
+    // Promise.all([
+    //   getAssetHubReserve(ctx, block.header.height, asset)
+    // ]).then(([assetReserve]) => {
+    //   omnipoolAssets.push(
+    //     new OmnipoolAsset({
+    //       id: `${asset}-${block.header.height}`,
+    //       assetId: asset,
+    //       block: block.header.height,
+    //       hubReserve: assetReserve
+    //     }))
+    // }).catch((e) => {
+    //   console.log("error: ", e)
+    // })
+    let oa = await getAssetsAndReserves(ctx, block.header.height)
+    omnipoolAssets.push(...oa)
+    //console.log("omnipoolAssets: ", oa)
   }
-  ctx.store.insert(omnipoolAssets)
+
+  await ctx.store.insert(omnipoolAssets)
 })
 
-async function getAssetHubReserve(ctx: Ctx, block: number, assetId: number) {
+async function getAssetHubReserves(ctx: Ctx, block: number, assetId: number) {
   let storage = new OmnipoolAssetsStorage(ctx, block as any)
-  return (await storage.asV115.get(assetId))?.hubReserve
+  return storage
 }
 
-function getAssets(ctx: Ctx, block: number) {
+async function getAssetsAndReserves(ctx: Ctx, block: number) {
   let storage = new OmnipoolAssetsStorage(ctx, block as any)
-  return storage.asV115.getKeys()
+  let omnipoolAssets: OmnipoolAsset[] = []
+  let pairs = await storage.asV115.getPairs()
+  for (let k in pairs) {
+    omnipoolAssets.push(new OmnipoolAsset({
+      id: `${pairs[k][0]}-${block}`,
+      assetId: pairs[k][0],
+      block: block,
+      hubReserve: pairs[k][1].hubReserve
+      }))
+  }
+  return omnipoolAssets
 }
