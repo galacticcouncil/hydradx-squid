@@ -1,6 +1,6 @@
 import { lookupArchive } from "@subsquid/archive-registry"
 import * as ss58 from "@subsquid/ss58"
-import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
+import { BatchBlock, BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
@@ -18,8 +18,8 @@ const processor = new SubstrateBatchProcessor()
     chain: 'wss://rpc.hydradx.cloud'
   })
   // Omnipool was initialized at block 1_708_101
-  .setBlockRange({ from: 1_708_101, to: 1_708_201})
-  .includeAllBlocks({ from: 1_708_101, to: 1_708_201})
+  .setBlockRange({ from: 1_708_101})
+  .includeAllBlocks({ from: 1_708_101})
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
@@ -27,24 +27,19 @@ type Ctx = BatchContext<Store, Item>
 processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
+  const promises = []
 
   for (const block of ctx.blocks) {
     if (block.header.height % 100 == 0) {
       console.log("block: ", block.header.height)
     }
-    
-    // WORKS
-    let oa = await getAssetsAndReserves(ctx, block.header.height)
-    omnipoolAssets.push(...oa)
+    promises.push(getAssetsAndReserves(ctx, block.header.height))
+  }
 
-    // WORKS NOT
-    // Promise.all([
-    //   getAssetsAndReserves(ctx, block.header.height)
-    // ]).then(([ass]) => {
-    //   omnipoolAssets.push(...ass)
-    // }).catch((e) => {
-    //   console.log("error: ", e)
-    // })
+  const results = await Promise.all(promises)
+
+  for (const res of results) {
+    omnipoolAssets.push(...res)
   }
 
   await ctx.store.insert(omnipoolAssets)
