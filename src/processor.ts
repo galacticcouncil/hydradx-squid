@@ -33,8 +33,18 @@ processor.run(new TypeormDatabase(), async ctx => {
       console.log("block: ", block.header.height)
     }
     
+    // WORKS
     let oa = await getAssetsAndReserves(ctx, block.header.height)
     omnipoolAssets.push(...oa)
+
+    // WORKS NOT
+    // Promise.all([
+    //   getAssetsAndReserves(ctx, block.header.height)
+    // ]).then(([ass]) => {
+    //   omnipoolAssets.push(...ass)
+    // }).catch((e) => {
+    //   console.log("error: ", e)
+    // })
   }
 
   await ctx.store.insert(omnipoolAssets)
