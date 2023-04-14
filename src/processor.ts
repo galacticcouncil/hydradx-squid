@@ -18,15 +18,8 @@ const processor = new SubstrateBatchProcessor()
     chain: 'wss://rpc.hydradx.cloud'
   })
   // Omnipool was initialized at block 1_708_101
-  .setBlockRange({ from: 1_708_101})
-  .includeAllBlocks({ from: 1_708_101})
-  // .addEvent('Omnipool.TokenAdded', {
-  //   data: {
-  //     event: {
-  //       args: true,
-  //     },
-  //   },
-  // })
+  .setBlockRange({ from: 1_708_101, to: 1_708_201})
+  .includeAllBlocks({ from: 1_708_101, to: 1_708_201})
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
@@ -35,44 +28,13 @@ processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
 
-  // let assetIds = await getAssets(ctx, ctx.blocks[0].header.height)
-  // const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
-  // let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
-  // const assetIds = await lastBlockStorage.asV115.getKeys()
-
-  // console.log("assetIds: ", assetIds)
-
   for (const block of ctx.blocks) {
     if (block.header.height % 100 == 0) {
       console.log("block: ", block.header.height)
     }
-
-    // for (let item of block.items) {
-    //   if (item.name == 'Omnipool.TokenAdded') {
-    //     let e = new OmnipoolTokenAddedEvent(ctx, item.event).asV115
-    //     console.log("assetId ", e.assetId)
-    //     assetIds.push(e.assetId)
-    //   }
-    // }
-
-    //let as = await getAssets(ctx, block.header.height)
-
-    // Promise.all([
-    //   getAssetHubReserve(ctx, block.header.height, asset)
-    // ]).then(([assetReserve]) => {
-    //   omnipoolAssets.push(
-    //     new OmnipoolAsset({
-    //       id: `${asset}-${block.header.height}`,
-    //       assetId: asset,
-    //       block: block.header.height,
-    //       hubReserve: assetReserve
-    //     }))
-    // }).catch((e) => {
-    //   console.log("error: ", e)
-    // })
+    
     let oa = await getAssetsAndReserves(ctx, block.header.height)
     omnipoolAssets.push(...oa)
-    //console.log("omnipoolAssets: ", oa)
   }
 
   await ctx.store.insert(omnipoolAssets)
@@ -95,5 +57,5 @@ async function getAssetsAndReserves(ctx: Ctx, block: number) {
       hubReserve: pairs[k][1].hubReserve
       }))
   }
-  return omnipoolAssets
+  return Promise.all(omnipoolAssets)
 }
