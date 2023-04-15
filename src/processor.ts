@@ -1,10 +1,11 @@
 import { lookupArchive } from "@subsquid/archive-registry"
 import * as ss58 from "@subsquid/ss58"
-import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
+import { BatchBlock, BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
 import { OmnipoolAssetsStorage } from "./types/storage"
+import { AssetState } from "./types/v115"
 
 
 const processor = new SubstrateBatchProcessor()
@@ -25,31 +26,29 @@ type Ctx = BatchContext<Store, Item>
 processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
-
-  const lastBlockHeader = ctx.blocks[ctx.blocks.length - 1].header
-  let lastBlockStorage = new OmnipoolAssetsStorage(ctx, lastBlockHeader)
-  const assetIds = await lastBlockStorage.asV115.getKeys()
+  const assetReserves = []
 
   for (const block of ctx.blocks) {
-    // console.log("Last block: ", block.header.height)
-    for (const asset of assetIds) {
-      Promise.all([
-        getAssetHubReserve(ctx, block.header.height, asset)
-      ]).then(([assetReserve]) => {
-        omnipoolAssets.push(
-          new OmnipoolAsset({
-            id: `${asset}-${block.header.height}`,
-            assetId: asset,
-            block: block.header.height,
-            hubReserve: assetReserve
-          }))
-      })
-    }
+    assetReserves.push(getAssetsAndReserves(ctx, block.header.height))
   }
-  ctx.store.insert(omnipoolAssets)
+
+  const results = await Promise.all(assetReserves)
+  omnipoolAssets = results.flat()
+
+  await ctx.store.insert(omnipoolAssets)
 })
 
-async function getAssetHubReserve(ctx: Ctx, block: number, assetId: number) {
+async function getAssetsAndReserves(ctx: Ctx, block: number) {
   let storage = new OmnipoolAssetsStorage(ctx, block as any)
-  return (await storage.asV115.get(assetId))?.hubReserve
+  let omnipoolAssets: OmnipoolAsset[] = []
+  let pairs = await storage.asV115.getPairs()
+  for (let k in pairs) {
+    omnipoolAssets.push(new OmnipoolAsset({
+      id: `${pairs[k][0]}-${block}`,
+      assetId: pairs[k][0],
+      block: block,
+      hubReserve: pairs[k][1].hubReserve
+      }))
+  }
+  return omnipoolAssets
 }

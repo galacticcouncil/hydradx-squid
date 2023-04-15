@@ -1,6 +1,6 @@
-type OmnipoolAsset @entity {
+type OmnipoolAsset @entity @index(fields: ["assetId", "block"]) {
   id: ID!
-  assetId: Int!
+  assetId: Int! @index
   block: Int! @index
   hubReserve: BigInt
 }
