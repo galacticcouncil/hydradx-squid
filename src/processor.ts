@@ -4,7 +4,6 @@ import { BatchBlock, BatchContext, BatchProcessorItem, SubstrateBatchProcessor }
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
-import { OmnipoolTokenAddedEvent } from "./types/events"
 import { OmnipoolAssetsStorage } from "./types/storage"
 import { AssetState } from "./types/v115"
 
@@ -27,20 +26,14 @@ type Ctx = BatchContext<Store, Item>
 processor.run(new TypeormDatabase(), async ctx => {
 
   let omnipoolAssets: OmnipoolAsset[] = []
-  const promises = []
+  const assetReserves = []
 
   for (const block of ctx.blocks) {
-    if (block.header.height % 100 == 0) {
-      console.log("block: ", block.header.height)
-    }
-    promises.push(getAssetsAndReserves(ctx, block.header.height))
+    assetReserves.push(getAssetsAndReserves(ctx, block.header.height))
   }
 
-  const results = await Promise.all(promises)
-
-  for (const res of results) {
-    omnipoolAssets.push(...res)
-  }
+  const results = await Promise.all(assetReserves)
+  omnipoolAssets = results.flat()
 
   await ctx.store.insert(omnipoolAssets)
 })

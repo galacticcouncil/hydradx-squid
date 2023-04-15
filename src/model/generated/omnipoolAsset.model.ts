@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 
+@Index_(["assetId", "block"], {unique: false})
 @Entity_()
 export class OmnipoolAsset {
     constructor(props?: Partial<OmnipoolAsset>) {
