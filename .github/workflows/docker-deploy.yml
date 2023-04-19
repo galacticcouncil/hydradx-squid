@@ -33,14 +33,15 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${DOCKERHUB_ACC}/hydradx-reserves:latest
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves:${{github.sha}}
 
     - name: Push Query-node image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
-    
-    - name: Run container
-      run: docker run -d -p 8080:8080 ${DOCKERHUB_ACC}/hydradx-reserves:latest
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves-qn:${{github.sha}}
+        
+    - name: Deploy to Docker
+      run: |
+        docker run -d -p 30333:30333 -p 9944:9944 --name subsquid ${DOCKERHUB_ACC}/hydradx-reserves:latest
