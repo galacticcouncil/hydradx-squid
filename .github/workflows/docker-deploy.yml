@@ -31,25 +31,19 @@ jobs:
     - name: Debug - List images
       run: docker images
 
-    - name: Tag Processor image with latest
-      run: docker tag hydradx-reserves:latest ${DOCKERHUB_ACC}/hydradx-reserves:latest
-
-    - name: Tag Query-node image with latest
-      run: docker tag hydradx-reserves-qn:latest ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
-
     - name: Push Processor image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ${{ env.DOCKERHUB_ACC }}/hydradx-reserves:latest
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves:latest
 
     - name: Push Query-node image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ${{ env.DOCKERHUB_ACC }}/hydradx-reserves-qn:latest
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
         
     - name: Deploy to Docker
       run: |
