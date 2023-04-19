@@ -23,10 +23,10 @@ jobs:
         password: ${{ env.DOCKERHUB_PASS }}
     
     - name: Build Processor image
-      run: docker build . --target hydradx-reserves -t ${DOCKERHUB_ACC}/hydradx-reserves:latest
+      run: docker build . --target processor -t ${DOCKERHUB_ACC}/hydradx-reserves:latest
     
     - name: Build Query-node image
-      run: docker build . --target hydradx-reserves-qn -t ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
+      run: docker build . --target query-node -t ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
     
     - name: Tag Processor image with latest
       run: docker tag hydradx-reserves ${DOCKERHUB_ACC}/hydradx-reserves:latest
