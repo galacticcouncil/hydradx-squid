@@ -22,21 +22,22 @@ jobs:
         username: ${{ env.DOCKERHUB_ACC }}
         password: ${{ env.DOCKERHUB_PASS }}
     
-    - name: Build Docker image
-      run: docker build -t subsquid:latest .
-      
-    - name: Tag Docker image
-      run: docker tag subsquid:latest ${{ env.DOCKERHUB_ACC }}/subsquid:latest
-      
-    - name: Push Docker image
+    - name: Build Processor image
+      run: docker build . --target processor -t ${DOCKERHUB_ACC}/hydradx-reserves:latest
+    
+    - name: Build Query-node image
+      run: docker build . --target query-node -t ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
+    
+    - name: Push Processor image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ${{ env.DOCKERHUB_ACC }}/subsquid:latest
-      
-    - name: Deploy to Hydradx Squid
-      run: |
-        ssh user@server "docker pull ${{ env.DOCKERHUB_ACC }}/subsquid:latest"
-        ssh user@server "docker stop squid && docker rm squid"
-        ssh user@server "docker run -d --name squid -p 8080:8080 ${{ env.DOCKERHUB_ACC }}/subsquid:latest"
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves:latest
+        
+    - name: Push Query-node image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
