@@ -28,13 +28,19 @@ jobs:
     - name: Build Query-node image
       run: docker build . --target query-node -t ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
     
+    - name: Tag Processor image with latest
+      run: docker tag hydradx-reserves ${DOCKERHUB_ACC}/hydradx-reserves:latest
+
+    - name: Tag Query-node image with latest
+      run: docker tag hydradx-reserves-qn ${DOCKERHUB_ACC}/hydradx-reserves-qn:latest
+    
     - name: Push Processor image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
         tags: ${DOCKERHUB_ACC}/hydradx-reserves:latest
-        
+
     - name: Push Query-node image
       uses: docker/build-push-action@v2
       with:
