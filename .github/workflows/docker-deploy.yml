@@ -1,0 +1,42 @@
+name: HydraDX Subsquid Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOCKERHUB_ACC: ${{ secrets.DOCKERHUB_ACC }}
+  DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Login to Dockerhub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ env.DOCKERHUB_ACC }}
+        password: ${{ env.DOCKERHUB_PASS }}
+    
+    - name: Build Docker image
+      run: docker build -t subsquid:latest .
+      
+    - name: Tag Docker image
+      run: docker tag subsquid:latest ${{ env.DOCKERHUB_ACC }}/subsquid:latest
+      
+    - name: Push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ env.DOCKERHUB_ACC }}/subsquid:latest
+      
+    - name: Deploy to Hydradx Squid
+      run: |
+        ssh user@server "docker pull ${{ env.DOCKERHUB_ACC }}/subsquid:latest"
+        ssh user@server "docker stop squid && docker rm squid"
+        ssh user@server "docker run -d --name squid -p 8080:8080 ${{ env.DOCKERHUB_ACC }}/subsquid:latest"
