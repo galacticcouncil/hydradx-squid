@@ -24,10 +24,10 @@ jobs:
         password: ${{ env.DOCKERHUB_PASS }}
     
     - name: Build Processor image
-      run: docker build . --target processor -t galacticcouncil/hydradx-reserves:latest
+      run: docker build . --target processor -t $ORG/hydradx-reserves:latest
     
     - name: Build Query-node image
-      run: docker build . --target query-node -t galacticcouncil/hydradx-reserves-qn:latest
+      run: docker build . --target query-node -t $ORG/hydradx-reserves-qn:latest
     
     - name: Debug - List images
       run: docker images
@@ -37,15 +37,15 @@ jobs:
       with:
         context: .
         push: true
-        tags: galacticcouncil/hydradx-reserves:latest
+        tags: $ORG/hydradx-reserves:latest
 
     - name: Push Query-node image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: galacticcouncil/hydradx-reserves-qn:latest
+        tags: $ORG/hydradx-reserves-qn:latest
         
     - name: Deploy to Docker
       run: |
-        docker run -d -p 30333:30333 -p 9944:9944 --name hydradx-reserves-subsquid ${DOCKERHUB_ACC}/hydradx-reserves:latest
+        docker run -d -p 30333:30333 -p 9944:9944 --name hydradx-reserves-subsquid $ORG/hydradx-reserves:latest
