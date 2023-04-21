@@ -6,19 +6,19 @@ import { In } from "typeorm"
 import { OmnipoolAsset } from "./model"
 import { OmnipoolAssetsStorage } from "./types/storage"
 import { AssetState } from "./types/v115"
+import dotenv from 'dotenv';
+dotenv.config();
 
+const archive = process.env.ARCHIVE || lookupArchive('hydradx', { release: 'FireSquid' });
+const chain = process.env.CHAIN || 'wss://rpc.hydradx.cloud';
+const from = Number(process.env.FROM || '1708101'); // Omnipool was initialized at block 1_708_101 on prod
+
+console.table({ archive, chain, from });
 
 const processor = new SubstrateBatchProcessor()
-  .setDataSource({
-    // Lookup archive by the network name in the Subsquid registry
-    archive: lookupArchive('hydradx', { release: 'FireSquid' }),
-    // Use archive created by archive/docker-compose.yml
-    //archive: 'http://localhost:8888/graphql',
-    chain: 'wss://rpc.hydradx.cloud'
-  })
-  // Omnipool was initialized at block 1_708_101
-  .setBlockRange({ from: 1_708_101})
-  .includeAllBlocks({ from: 1_708_101})
+  .setDataSource({ archive, chain })
+  .setBlockRange({ from })
+  .includeAllBlocks({ from })
 
 type Item = BatchProcessorItem<typeof processor>
 type Ctx = BatchContext<Store, Item>
