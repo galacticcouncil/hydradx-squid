@@ -28,8 +28,8 @@ processor.run(new TypeormDatabase(), async ctx => {
   let omnipoolAssets: OmnipoolAsset[] = []
   const assetReserves = []
 
-  for (const block of ctx.blocks) {
-    assetReserves.push(getAssetsAndReserves(ctx, block.header.height))
+  for (let block of ctx.blocks) {
+    assetReserves.push(getAssetsAndReserves(ctx, block))
   }
 
   const results = await Promise.all(assetReserves)
@@ -38,15 +38,15 @@ processor.run(new TypeormDatabase(), async ctx => {
   await ctx.store.insert(omnipoolAssets)
 })
 
-async function getAssetsAndReserves(ctx: Ctx, block: number) {
-  let storage = new OmnipoolAssetsStorage(ctx, block as any)
+async function getAssetsAndReserves(ctx: Ctx, block: BatchBlock<Item>) {
+  let storage = new OmnipoolAssetsStorage(ctx, block.header)
   let omnipoolAssets: OmnipoolAsset[] = []
   let pairs = await storage.asV115.getPairs()
   for (let k in pairs) {
     omnipoolAssets.push(new OmnipoolAsset({
-      id: `${pairs[k][0]}-${block}`,
+      id: `${pairs[k][0]}-${block.header.height}`,
       assetId: pairs[k][0],
-      block: block,
+      block: block.header.height,
       hubReserve: pairs[k][1].hubReserve
       }))
   }
