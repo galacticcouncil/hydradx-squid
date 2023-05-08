@@ -40,7 +40,7 @@ jobs:
       run: gcloud auth configure-docker -q
 
     - name: IAM policy helper
-      run: gcloud beta run services add-iam-policy-binding --region=europe-west3 --member=allUsers --role=roles/run.invoker ${{ env.CGP_SERVICE_NAME }}-processor
+      run: gcloud run services add-iam-policy-binding --region=europe-west3 --member=allUsers --role=roles/run.invoker ${{ env.CGP_SERVICE_NAME }}-processor
     
     - name: Push & Deploy Processor image
       run: |
