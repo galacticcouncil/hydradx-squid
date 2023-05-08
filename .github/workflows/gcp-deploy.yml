@@ -47,7 +47,8 @@ jobs:
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
-          --memory 4000Mi
+          --memory 4000Mi \
+          --port 8080
 
     - name: Push Query-node image
       run: |
@@ -57,4 +58,5 @@ jobs:
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
-          --memory 4000Mi
+          --memory 4000Mi \
+          --port 8081
