@@ -37,8 +37,7 @@ jobs:
       run: docker images
 
     - name: Docker credential helper
-        run: |
-          gcloud auth configure-docker -q
+        run: gcloud auth configure-docker -q
 
     - name: Push Processor image
       run: |
