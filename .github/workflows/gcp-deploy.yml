@@ -19,12 +19,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Configure gcloud
-      uses: google-github-actions/setup-gcloud@v0
+    - name: 'Authenticate with GCP'
+      uses: 'google-github-actions/auth@v1'
       with:
-        project_id: ${{ env.CGP_PROJECT_ID }}
-        service_account_key: ${{ secrets.CGP_PROJECT_PASS }}
-        export_default_credentials: true
+        credentials_json: '${{ secrets.CGP_PROJECT_PASS }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
     
     - name: Build Processor image
       run: docker build . --target processor -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
