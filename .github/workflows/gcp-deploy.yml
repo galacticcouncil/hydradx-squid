@@ -40,9 +40,10 @@ jobs:
       run: gcloud auth configure-docker -q
     
     - name: Push Processor image
-      run: |
-        docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
-        gcloud run deploy ${CGP_SERVICE_NAME}-processor \
+      run: docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
+        
+    - name: Deploy processor image
+      run: gcloud run deploy ${CGP_SERVICE_NAME}-processor \
           --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:processor-latest \
           --platform managed \
           --region europe-west3 \
@@ -50,9 +51,10 @@ jobs:
           --memory 4000Mi
 
     - name: Push Query-node image
-      run: |
-        docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
-        gcloud run deploy ${CGP_SERVICE_NAME}-query-node \
+      run: docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
+        
+    - name: Deploy Query-node image
+      run: gcloud run deploy ${CGP_SERVICE_NAME}-query-node \
           --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:query-node-latest \
           --platform managed \
           --region europe-west3 \
