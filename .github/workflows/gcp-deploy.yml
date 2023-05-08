@@ -18,12 +18,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      
-    - name: Login to Dockerhub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ env.DOCKERHUB_ACC }}
-        password: ${{ env.DOCKERHUB_PASS }}
 
     - name: Configure gcloud
       uses: google-github-actions/setup-gcloud@v0
@@ -33,10 +27,10 @@ jobs:
         export_default_credentials: true
     
     - name: Build Processor image
-      run: docker build . --target processor -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:processor-latest
+      run: docker build . --target processor -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
     
     - name: Build Query-node image
-      run: docker build . --target query-node -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:query-node-latest
+      run: docker build . --target query-node -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
     
     - name: Debug - List images
       run: docker images
