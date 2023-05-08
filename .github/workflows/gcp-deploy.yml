@@ -26,7 +26,7 @@ jobs:
         password: ${{ env.DOCKERHUB_PASS }}
 
     - name: Configure gcloud
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ env.CGP_PROJECT_ID }}
         service_account_key: ${{ secrets.CGP_PROJECT_PASS }}
