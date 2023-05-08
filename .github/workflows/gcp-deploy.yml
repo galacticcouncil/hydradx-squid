@@ -38,6 +38,9 @@ jobs:
 
     - name: Docker credential helper
       run: gcloud auth configure-docker -q
+    
+    - name: Bind iAM
+      run: gcloud beta run services add-iam-policy-binding --region=europe-west3 --member=allUsers --role=roles/run.invoker ${CGP_SERVICE_NAME}-processor
 
     - name: Push Processor image
       run: |
