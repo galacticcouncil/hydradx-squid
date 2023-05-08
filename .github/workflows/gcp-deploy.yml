@@ -44,11 +44,17 @@ jobs:
         docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
         gcloud run deploy ${CGP_SERVICE_NAME}-processor \
           --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:processor-latest \
-          --platform managed
+          --platform managed \
+          --region europe-west3 \
+          --allow-unauthenticated \
+          --memory 15000Mi
 
     - name: Push Query-node image
       run: |
         docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
         gcloud run deploy ${CGP_SERVICE_NAME}-query-node \
           --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:query-node-latest \
-          --platform managed
+          --platform managed \
+          --region europe-west3 \
+          --allow-unauthenticated \
+          --memory 15000Mi
