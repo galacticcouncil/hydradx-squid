@@ -28,10 +28,10 @@ jobs:
       uses: 'google-github-actions/setup-gcloud@v1'
     
     - name: Build Processor image
-      run: docker build . --target processor -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
+      run: docker build . --target processor -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest --platform linux/amd64
     
     - name: Build Query-node image
-      run: docker build . --target query-node -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
+      run: docker build . --target query-node -t gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest --platform linux/amd64
     
     - name: Debug - List images
       run: docker images
