@@ -51,6 +51,7 @@ jobs:
           --region europe-west3 \
           --allow-unauthenticated \
           --memory 4000Mi
+          --port 30333
 
     - name: Push & Deploy Query-node image
       run: |
