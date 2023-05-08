@@ -43,8 +43,8 @@ jobs:
       run: docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest
         
     - name: Deploy processor image
-      run: gcloud run deploy ${CGP_SERVICE_NAME}-processor \
-          --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:processor-latest \
+      run: gcloud run deploy ${{ env.CGP_SERVICE_NAME }}-processor \
+          --image gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:processor-latest \
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
@@ -54,8 +54,8 @@ jobs:
       run: docker push gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest
         
     - name: Deploy Query-node image
-      run: gcloud run deploy ${CGP_SERVICE_NAME}-query-node \
-          --image gcr.io/${CGP_PROJECT_ID}/${CGP_SERVICE_NAME}:query-node-latest \
+      run: gcloud run deploy ${{ env.CGP_SERVICE_NAME }}-query-node \
+          --image gcr.io/${{ env.CGP_PROJECT_ID }}/${{ env.CGP_SERVICE_NAME }}:query-node-latest \
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
