@@ -8,6 +8,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: squid-archive
+    shm_size: 10gb
+    ports:
+      - "23799:5432"
 
   ingest:
     depends_on:
