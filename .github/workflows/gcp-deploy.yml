@@ -40,7 +40,7 @@ jobs:
       run: gcloud auth configure-docker -q
     
     - name: Bind iAM
-      run: gcloud beta run services add-iam-policy-binding --region=europe-west3 --member=allUsers --role=roles/run.invoker ${CGP_SERVICE_NAME}-processor
+      run: gcloud beta run services add-iam-policy-binding --region=europe-west3 --member=allUsers --role=roles/run.invoker ${CGP_SERVICE_NAME}-processor --quiet
 
     - name: Push Processor image
       run: |
@@ -50,8 +50,7 @@ jobs:
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
-          --memory 4000Mi \
-          --port 8080
+          --memory 4000Mi
 
     - name: Push Query-node image
       run: |
@@ -61,5 +60,4 @@ jobs:
           --platform managed \
           --region europe-west3 \
           --allow-unauthenticated \
-          --memory 4000Mi \
-          --port 8081
+          --memory 4000Mi
