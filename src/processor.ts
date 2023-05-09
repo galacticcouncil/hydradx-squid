@@ -13,13 +13,6 @@ const archive = process.env.ARCHIVE || lookupArchive('hydradx', { release: 'Fire
 const chain = process.env.CHAIN || 'wss://rpc.hydradx.cloud';
 const from = Number(process.env.FROM || '1708101'); // Omnipool was initialized at block 1_708_101 on prod
 
-// Running from Google Cloud?
-if(process.env.NODE_ENV === 'production') {
-  console.log('Running from cloud. Connecting to DB through GCP socket.');
-  process.env.host = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
-  process.env.socketPath = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
-}
-
 console.table({ archive, chain, from });
 
 const processor = new SubstrateBatchProcessor()
