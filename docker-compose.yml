@@ -3,10 +3,14 @@ version: "3"
 services:
   db:
     container_name: subsquid_db
-    image: postgres:15
+    image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.2.0
+    command: ["./cloud_sql_proxy", "-instances=rich-principle-383410:europe-west3:squid=tcp:5432"]
     environment:
       POSTGRES_DB: squid
+      POSTGRES_USER: squid
       POSTGRES_PASSWORD: squid
+      CLOUD_SQL_CONNECTION_NAME: rich-principle-383410:europe-west3:squid
+      DB_HOST: "127.0.0.1"
     shm_size: 1gb
     ports:
       - "${DB_PORT}:5432"
