@@ -5,8 +5,8 @@ on:
     branches: [ main ]
 
 env:
-  CGP_PROJECT_ID: rich-principle-383410
-  CGP_SERVICE_NAME: squid-sa
+  GCP_PROJECT_ID: rich-principle-383410
+  GCP_SERVICE_NAME: squid-sa
   GCP_INSTANCE: rich-principle-383410:europe-west3:squid
   GAR_LOCATION: europe-west3
   REPOSITORY: hydradx-squid
@@ -38,12 +38,12 @@ jobs:
       run: docker images
     
     - name: IAM policy helper
-      run: gcloud run services add-iam-policy-binding --region=${{ env.GAR_LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.CGP_SERVICE_NAME }}-processor
+      run: gcloud run services add-iam-policy-binding --region=${{ env.GAR_LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.GCP_SERVICE_NAME }}-processor
 
     - name: Push & Deploy Processor image
       run: |
         docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest
-        gcloud run deploy ${CGP_SERVICE_NAME}-processor \
+        gcloud run deploy ${GCP_SERVICE_NAME}-processor \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest \
           --platform managed \
           --region europe-west3 \
