@@ -51,6 +51,7 @@ jobs:
           --memory 4000Mi \
           --add-cloudsql-instances ${GCP_INSTANCE} \
           --set-env-vars INSTANCE_UNIX_SOCKET="/cloudsql/${GCP_INSTANCE}" \
+          --set-env-vars HOST="/cloudsql/${GCP_INSTANCE}" \
           --set-env-vars INSTANCE_CONNECTION_NAME=${GCP_INSTANCE} \
           --set-env-vars DB_NAME="squid" \
           --set-env-vars DB_USER="squid" \
