@@ -5,6 +5,7 @@
     "node" : ">=16"
   },
   "scripts": {
+    "start": "node server.js",
     "build": "rm -rf lib && tsc",
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "db:migrate": "npx squid-typeorm-migration apply",

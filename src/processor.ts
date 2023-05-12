@@ -9,15 +9,6 @@ import { AssetState } from "./types/v115"
 import dotenv from 'dotenv';
 dotenv.config();
 
-const http = require('http');
-const hostname = '0.0.0.0';
-const port = process.env.PORT || 3000;
-const server = http.createServer();
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
-
 const archive = process.env.ARCHIVE || lookupArchive('hydradx', { release: 'FireSquid' });
 const chain = process.env.CHAIN || 'wss://rpc.hydradx.cloud';
 const from = Number(process.env.FROM || '1708101'); // Omnipool was initialized at block 1_708_101 on prod
