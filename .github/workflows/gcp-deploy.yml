@@ -8,7 +8,7 @@ env:
   PROJECT: rich-principle-383410
   LOCATION: europe-west3
   REPOSITORY: hydradx-squid
-  SERVICE: hydradx-squid
+  SERVICE: squid-sa
 
 jobs:
   deploy:
