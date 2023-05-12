@@ -57,6 +57,7 @@ jobs:
         docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
         gcloud run deploy ${GCP_SERVICE_NAME}-ingest \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
+          --region europe-west3 \
           --command='-e wss://rpc.hydradx.cloud -c 20 --out postgres://squid:squid@squid:5432/squid'
 
     - name: Pull & Push & Deploy archive gateway
@@ -66,5 +67,6 @@ jobs:
         docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
         gcloud run deploy ${GCP_SERVICE_NAME}-gateway \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
+          --region europe-west3 \
           --command "--database-url postgres://squid:squid@squid:5432/squid --database-max-connections 5" \
           --port 8000
