@@ -35,8 +35,8 @@ jobs:
     - name: Debug - List images
       run: docker images
     
-    - name: IAM policy helper
-      run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
+    # - name: IAM policy helper
+    #   run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
 
     # - name: Push & Deploy Processor image
     #   run: |
