@@ -50,17 +50,19 @@ jobs:
     #       --allow-unauthenticated \
     #       --memory 4000Mi
 
-    - name: Push & Deploy archive ingest
+    - name: Pull & Push & Deploy archive ingest
       run: |
-        docker tag docker.io/subsquid/substrate-ingest:firesquid ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
+        docker pull subsquid/substrate-ingest:firesquid
+        docker tag subsquid/substrate-ingest:firesquid ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
         docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
         gcloud run deploy ${GCP_SERVICE_NAME}-ingest \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
           --command='-e wss://rpc.hydradx.cloud -c 20 --out postgres://squid:squid@squid:5432/squid'
 
-    - name: Push & Deploy archive gateway
+    - name: Pull & Push & Deploy archive gateway
       run: |
-        docker tag docker.io/subsquid/substrate-gateway:firesquid ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
+        docker pull subsquid/substrate-gateway:firesquid
+        docker tag subsquid/substrate-gateway:firesquid ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
         docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
         gcloud run deploy ${GCP_SERVICE_NAME}-gateway \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
