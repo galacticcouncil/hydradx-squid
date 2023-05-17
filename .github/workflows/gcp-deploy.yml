@@ -35,27 +35,27 @@ jobs:
     # - name: IAM policy helper
     #   run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
 
-    - name: Push & Deploy Processor image
-      run: |
-        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest
-        gcloud run deploy ${SERVICE}-processor \
-          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest \
-          --platform managed \
-          --region europe-west3 \
-          --allow-unauthenticated \
-          --memory 4000Mi
-
-    # - name: Pull & Push & Deploy archive ingest
+    # - name: Push & Deploy Processor image
     #   run: |
-    #     docker pull subsquid/substrate-ingest:firesquid
-    #     docker tag subsquid/substrate-ingest:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
-    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
-    #     gcloud run deploy ${SERVICE}-ingest \
-    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
-    #       --region europe-west3 \
+    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest
+    #     gcloud run deploy ${SERVICE}-processor \
+    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest \
     #       --platform managed \
+    #       --region europe-west3 \
     #       --allow-unauthenticated \
-    #       --command='-e wss://rpc.hydradx.cloud -c 20 --out postgres://squid:squid@squid:5432/squid'
+    #       --memory 4000Mi
+
+    - name: Pull & Push & Deploy archive ingest
+      run: |
+        docker pull subsquid/substrate-ingest:firesquid
+        docker tag subsquid/substrate-ingest:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
+        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
+        gcloud run deploy ${SERVICE}-ingest \
+          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
+          --region europe-west3 \
+          --platform managed \
+          --allow-unauthenticated \
+          --command='-e wss://rpc.hydradx.cloud -c 20 -- --out postgres://squid:squid@10.86.32.4:5432/squid'
 
     # - name: Pull & Push & Deploy archive gateway
     #   run: |
