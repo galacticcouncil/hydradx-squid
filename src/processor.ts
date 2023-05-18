@@ -7,13 +7,8 @@ import { OmnipoolAsset } from "./model"
 import { OmnipoolAssetsStorage } from "./types/storage"
 import { AssetState } from "./types/v115"
 import dotenv from 'dotenv';
-import server from 'server';
+
 dotenv.config();
-
-
-const hostname = '0.0.0.0';
-const port = 8080;
-server.listen(port, hostname, () => {});
 
 const archive = process.env.ARCHIVE || lookupArchive('hydradx', { release: 'FireSquid' });
 const chain = process.env.CHAIN || 'wss://rpc.hydradx.cloud';

@@ -43,4 +43,4 @@ FROM squid AS query-node
 CMD ["npm", "run", "query-node:start"]
 
 FROM squid AS ingest
-CMD ["node", "server.js"]
+CMD ["npm", "run", "ingest:start"]
