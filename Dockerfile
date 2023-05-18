@@ -15,12 +15,14 @@ RUN npm run build
 FROM node-with-gyp AS deps
 WORKDIR /squid
 ADD package.json .
+ADD server.js .
 ADD package-lock.json .
 RUN npm ci --production
 
 FROM node AS squid
 WORKDIR /squid
 COPY --from=deps /squid/package.json .
+COPY --from=deps /squid/server.js .
 COPY --from=deps /squid/package-lock.json .
 COPY --from=deps /squid/node_modules node_modules
 COPY --from=builder /squid/lib lib
@@ -37,7 +39,6 @@ EXPOSE 8080
 
 FROM squid AS processor
 CMD ["npm", "run", "processor:start"]
-
 
 FROM squid AS query-node
 CMD ["npm", "run", "query-node:start"]

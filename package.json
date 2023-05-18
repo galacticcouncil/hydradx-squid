@@ -5,13 +5,15 @@
     "node": ">=16"
   },
   "scripts": {
+    "server:start": "node server.js",
     "build": "rm -rf lib && tsc",
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "db:migrate": "npx squid-typeorm-migration apply",
-    "processor:start": "node lib/processor.js",
-    "server:start": "node lib/server.js",
+    "process": "node lib/processor.js",
+    "processor:start": "npm-run-all -p server:start process",
     "query-node:start": "squid-graphql-server --subscriptions --max-response-size 10000 --dumb-cache in-memory --dumb-cache-ttl 1000 --dumb-cache-size 100 --dumb-cache-max-age 1000",
-    "ingest:start": "npm-run-all -p ingest:start node server.js"
+    "ingest": "docker run ingest",
+    "ingest:start": "npm-run-all -p server:start ingest"
   },
   "dependencies": {
     "@subsquid/archive-registry": "2.1.10",
