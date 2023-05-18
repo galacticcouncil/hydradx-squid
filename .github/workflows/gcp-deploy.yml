@@ -55,7 +55,7 @@ jobs:
           --region europe-west3 \
           --platform managed \
           --allow-unauthenticated \
-          --args='-e wss://rpc.hydradx.cloud, -c 20, --out, postgres://squid:squid@10.130.49.4:5432/squid'
+          --args="-e wss://rpc.hydradx.cloud,-c 20,--out,postgres://squid:squid@10.130.49.4:5432/squid"
 
     # - name: Pull & Push & Deploy archive gateway
     #   run: |
