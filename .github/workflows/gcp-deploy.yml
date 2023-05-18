@@ -29,8 +29,8 @@ jobs:
     - name: Set up Docker
       run: gcloud auth configure-docker europe-west3-docker.pkg.dev
     
-    - name: Build Processor image
-      run: docker buildx build . --target processor -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest --platform linux/amd64
+    # - name: Build Processor image
+    #   run: docker buildx build . --target processor -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest --platform linux/amd64
     
     # - name: IAM policy helper
     #   run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
@@ -55,7 +55,7 @@ jobs:
           --region europe-west3 \
           --platform managed \
           --allow-unauthenticated \
-          --command='-e wss://rpc.hydradx.cloud -c 20 -- --out postgres://squid:squid@10.86.32.4:5432/squid'
+          --args='-e wss://rpc.hydradx.cloud, -c 20, --out, postgres://squid:squid@10.130.49.4:5432/squid'
 
     # - name: Pull & Push & Deploy archive gateway
     #   run: |
