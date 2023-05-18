@@ -56,7 +56,7 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --args="-e wss://rpc.hydradx.cloud,-c 20,--out,postgres://squid:squid@10.130.49.4:5432/squid" \
-          --port 8081
+          --port 9090
 
     # - name: Pull & Push & Deploy archive gateway
     #   run: |
