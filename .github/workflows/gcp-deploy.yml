@@ -45,28 +45,28 @@ jobs:
     #       --allow-unauthenticated \
     #       --memory 4000Mi
 
-    - name: Pull & Push & Deploy archive ingest
-      run: |
-        docker pull subsquid/substrate-ingest:firesquid
-        docker tag subsquid/substrate-ingest:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
-        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
-        gcloud run deploy ${SERVICE}-ingest \
-          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
-          --region europe-west3 \
-          --platform managed \
-          --allow-unauthenticated \
-          --args="-e wss://rpc.hydradx.cloud,-c 20,--out,postgres://squid:squid@10.130.49.4:5432/squid" \
-          --port 9090
-
-    # - name: Pull & Push & Deploy archive gateway
+    # - name: Pull & Push & Deploy archive ingest
     #   run: |
-    #     docker pull subsquid/substrate-gateway:firesquid
-    #     docker tag subsquid/substrate-gateway:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
-    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
-    #     gcloud run deploy ${SERVICE}-gateway \
-    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
+    #     docker pull subsquid/substrate-ingest:firesquid
+    #     docker tag subsquid/substrate-ingest:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
+    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest
+    #     gcloud run deploy ${SERVICE}-ingest \
+    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-ingest:latest \
     #       --region europe-west3 \
     #       --platform managed \
     #       --allow-unauthenticated \
-    #       --command "--database-url postgres://squid:squid@squid:5432/squid --database-max-connections 5" \
-    #       --port 8000
+    #       --args="-e wss://rpc.hydradx.cloud,-c 20,--out,postgres://squid:squid@10.130.49.4:5432/squid" \
+    #       --port 9090
+
+    - name: Pull & Push & Deploy archive gateway
+      run: |
+        docker pull subsquid/substrate-gateway:firesquid
+        docker tag subsquid/substrate-gateway:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
+        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
+        gcloud run deploy ${SERVICE}-gateway \
+          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
+          --region europe-west3 \
+          --platform managed \
+          --allow-unauthenticated \
+          --args "--database-url postgres://squid:squid@squid:5432/squid --database-max-connections 5" \
+          --port 8000

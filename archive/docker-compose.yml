@@ -13,6 +13,8 @@ services:
     depends_on:
       - db
     restart: on-failure
+    ports:
+      - "9090:9090"
     image: subsquid/substrate-ingest:firesquid
     command: [
        "-e", "wss://rpc.hydradx.cloud",
