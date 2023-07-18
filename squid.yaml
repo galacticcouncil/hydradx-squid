@@ -2,7 +2,7 @@ manifestVersion: subsquid.io/v0.1
 name: hydradx-reserves
 version: 1
 description: |-
-  The very first squid from manifest  
+  Squid tracking Omnipool reserves  
 build:
 
 deploy:

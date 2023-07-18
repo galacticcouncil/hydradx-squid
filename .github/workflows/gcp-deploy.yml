@@ -29,21 +29,21 @@ jobs:
     - name: Set up Docker
       run: gcloud auth configure-docker europe-west3-docker.pkg.dev
     
-    # - name: Build Processor image
-    #   run: docker buildx build . --target processor -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest --platform linux/amd64
+    - name: Build Processor image
+      run: docker buildx build . --target processor -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest --platform linux/amd64
     
-    # - name: IAM policy helper
-    #   run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
+    - name: IAM policy helper
+      run: gcloud run services add-iam-policy-binding --region=${{ env.LOCATION }} --member=allUsers --role=roles/run.invoker ${{ env.SERVICE }}-processor
 
-    # - name: Push & Deploy Processor image
-    #   run: |
-    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest
-    #     gcloud run deploy ${SERVICE}-processor \
-    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest \
-    #       --platform managed \
-    #       --region europe-west3 \
-    #       --allow-unauthenticated \
-    #       --memory 4000Mi
+    - name: Push & Deploy Processor image
+      run: |
+        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest
+        gcloud run deploy ${SERVICE}-processor \
+          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:latest \
+          --platform managed \
+          --region europe-west3 \
+          --allow-unauthenticated \
+          --memory 4000Mi
 
     # - name: Pull & Push & Deploy archive ingest
     #   run: |
@@ -58,15 +58,15 @@ jobs:
     #       --args="-e wss://rpc.hydradx.cloud,-c 20,--out,postgres://squid:squid@10.130.49.4:5432/squid" \
     #       --port 9090
 
-    - name: Pull & Push & Deploy archive gateway
-      run: |
-        docker pull subsquid/substrate-gateway:firesquid
-        docker tag subsquid/substrate-gateway:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
-        docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
-        gcloud run deploy ${SERVICE}-gateway \
-          --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
-          --region europe-west3 \
-          --platform managed \
-          --allow-unauthenticated \
-          --args "--database-url postgres://squid:squid@squid:5432/squid --database-max-connections 5" \
-          --port 8000
+    # - name: Pull & Push & Deploy archive gateway
+    #   run: |
+    #     docker pull subsquid/substrate-gateway:firesquid
+    #     docker tag subsquid/substrate-gateway:firesquid ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
+    #     docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest
+    #     gcloud run deploy ${SERVICE}-gateway \
+    #       --image ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}-gateway:latest \
+    #       --region europe-west3 \
+    #       --platform managed \
+    #       --allow-unauthenticated \
+    #       --args "--database-url postgres://squid:squid@squid:5432/squid --database-max-connections 5" \
+    #       --port 8000
